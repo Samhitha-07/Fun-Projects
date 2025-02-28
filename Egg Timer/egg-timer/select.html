@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Choose Egg</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <h1>What are you making today?</h1>
+        <div class="egg-container">
+            <div class="egg-option">
+                <img src="soft.png" class="egg" data-time="4" data-img="soft.png">
+                <p>Soft Boiled</p>
+            </div>
+            <div class="egg-option">
+                <img src="hard.png" class="egg" data-time="6" data-img="hard.png">
+                <p>Jammy Eggs</p>
+            </div>
+            <div class="egg-option">
+                <img src="jammy1.png" class="egg" data-time="10" data-img="jammy1.png">
+                <p>Hard Boiled</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll(".egg").forEach(egg => {
+            egg.addEventListener("click", () => {
+                const time = egg.getAttribute("data-time");
+                const img = egg.getAttribute("data-img");
+
+                localStorage.setItem("eggTime", time); // Store timer duration
+                localStorage.setItem("eggImg", img); // Store image src
+
+                window.location.href = "timer.html"; // Move to timer page
+            });
+        });
+    </script>
+</body>
+</html>

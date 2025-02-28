@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Egg Timer</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Your egg will be ready in</h1>
+        <img id="eggImage" src="" alt="Egg Image">
+        <div id="timer">0:00</div>
+        <button id="controlBtn">Start Timer</button>
+    </div>
+
+    <script>
+        let countdown = null, timeLeft, isPaused = false;
+        const timerDisplay = document.getElementById("timer");
+        const controlBtn = document.getElementById("controlBtn");
+        const eggImage = document.getElementById("eggImage");
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const time = localStorage.getItem("eggTime") || 4;
+            let imgSrc = localStorage.getItem("eggImg") || "egg1.png"; // Default image
+
+            console.log("Loaded Image Path:", imgSrc); // Debugging
+            eggImage.src = imgSrc;
+            eggImage.style.display = "block";
+
+            timeLeft = time * 60; // Convert minutes to seconds
+            updateTimerDisplay();
+
+            controlBtn.addEventListener("click", toggleTimer);
+        });
+
+        function updateTimerDisplay() {
+            const min = Math.floor(timeLeft / 60);
+            const sec = timeLeft % 60;
+            timerDisplay.textContent = `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+
+        function toggleTimer() {
+            if (!countdown) {
+                startTimer();
+                controlBtn.textContent = "Pause";
+            } else if (!isPaused) {
+                pauseTimer();
+                controlBtn.textContent = "Restart";
+            } else {
+                resumeTimer();
+                controlBtn.textContent = "Pause";
+            }
+        }
+
+        function startTimer() {
+            isPaused = false;
+            countdown = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateTimerDisplay();
+                } else {
+                    clearInterval(countdown);
+                    timerDone();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isPaused = true;
+            clearInterval(countdown);
+            countdown = null;
+        }
+
+        function resumeTimer() {
+            isPaused = false;
+            startTimer();
+        }
+
+        function timerDone() {
+            timerDisplay.textContent = "Egg is Ready! 🍳";
+            controlBtn.textContent = "Start Timer";
+
+            let alarmSound = new Audio("alarm.wav"); // Make sure "alarm.mp3" is in your project directory
+            alarmSound.play();
+
+            clearInterval(countdown);
+            countdown = null;
+
+            // Remove old buttons if they exist
+            document.getElementById("snooze")?.remove();
+            document.getElementById("close")?.remove();
+
+            const buttonContainer = document.createElement("div");
+            buttonContainer.id = "extraButtons";
+            buttonContainer.innerHTML = `
+                <button id="snooze">Snooze</button>
+                <button id="close">Close</button>
+            `;
+            document.body.appendChild(buttonContainer);
+
+            document.getElementById("snooze").addEventListener("click", () => {
+                timeLeft = 60; // 1-minute snooze
+                startTimer();
+                controlBtn.textContent = "Pause";
+
+                buttonContainer.remove(); // Remove snooze and close buttons
+            });
+
+            document.getElementById("close").addEventListener("click", () => {
+                window.close();
+            });
+        }
+    </script>
+</body>
+</html>
